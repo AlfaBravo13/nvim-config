@@ -1,114 +1,26 @@
---[[
-    After understanding a bit more about Lua, you can use `:help lua-guide` as a
-    reference for how Neovim integrates Lua.
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
-Kickstart Guide:
-
-    MOST IMPORTANTLY, we provide a keymap "<space>sh" to [s]earch the [h]elp documentation,
-    which is very useful when you're not exactly sure of what you're looking for.
-
-If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
---]]
-
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+-- OPTIONS
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
--- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
-
--- [[ setting options ]]
--- see `:help vim.o`
---  for more options, you can see `:help option-list`
-
--- make line numbers default
 vim.o.number = true
--- you can also add relative line numbers, to help with jumping.
---  experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
-
--- enable mouse mode, can be useful for resizing splits for example!
-vim.o.mouse = 'a'
-
--- don't show the mode, since it's already in the status line
-vim.o.showmode = false
-
--- sync clipboard between os and neovim.
---  schedule the setting after `uienter` because it can increase startup-time.
---  remove this option if you want your os clipboard to remain independent.
---  see `:help 'clipboard'`
-vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
-end)
-
--- enable break indent
 vim.o.breakindent = true
-
--- save undo history
 vim.o.undofile = true
-
--- case-insensitive searching unless \c or one or more capital letters in the search term
 vim.o.ignorecase = true
 vim.o.smartcase = true
-
--- keep signcolumn on by default
 vim.o.signcolumn = 'yes'
-
--- decrease update time
 vim.o.updatetime = 250
-
--- decrease mapped sequence wait time
 vim.o.timeoutlen = 300
-
--- configure how new splits should be opened
 vim.o.splitright = true
 vim.o.splitbelow = true
-
--- sets how neovim will display certain whitespace characters in the editor.
---  see `:help 'list'`
---  and `:help 'listchars'`
---
---  notice listchars is set using `vim.opt` instead of `vim.o`.
---  it is very similar to `vim.o` but offers an interface for conveniently interacting with tables.
---   see `:help lua-options`
---   and `:help lua-options-guide`
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
-
--- preview substitutions live, as you type!
 vim.o.inccommand = 'split'
-
--- show which line your cursor is on
-vim.o.cursorline = true
-
--- minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
-
--- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
--- instead raise a dialog asking if you wish to save the current file(s)
--- see `:help 'confirm'`
 vim.o.confirm = true
-
--- [[ basic keymaps ]]
---  see `:help vim.keymap.set()`
-
--- clear highlights on search when pressing <esc> in normal mode
---  see `:help hlsearch`
+-- KEYMAPS
 vim.keymap.set('n', '<esc>', '<cmd>nohlsearch<cr>')
-
--- diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'open diagnostic [q]uickfix list' })
-
--- [[ basic autocommands ]]
---  see `:help lua-guide-autocommands`
-
--- highlight when yanking (copying) text
---  try it with `yap` in normal mode
---  see `:help vim.hl.on_yank()`
+-- AUTOCOMMANDS
 vim.api.nvim_create_autocmd('textyankpost', {
   desc = 'highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -117,8 +29,7 @@ vim.api.nvim_create_autocmd('textyankpost', {
   end,
 })
 
--- [[ install `lazy.nvim` plugin manager ]]
---    see `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
+-- install `lazy.nvim` plugin manager
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
@@ -628,8 +539,8 @@ require('lazy').setup({
 
   { -- autoformat
     'stevearc/conform.nvim',
-    event = { 'bufwritepre' },
-    cmd = { 'conforminfo' },
+    event = { 'Bufwritepre' },
+    cmd = { 'Conforminfo' },
     keys = {
       {
         '<leader>f',
@@ -658,11 +569,6 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- you can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
     },
   },
@@ -809,23 +715,12 @@ require('lazy').setup({
       -- - sr)'  - [s]urround [r]eplace [)] [']
       require('mini.surround').setup()
 
-      -- simple and easy statusline.
-      --  you could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
       local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a nerd font
       statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- you can configure sections in the statusline by overriding their
-      -- default behavior. for example, here we set the section for
-      -- cursor location to line:column
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
         return '%2l:%-2v'
       end
-
-      -- ... and there is more!
-      --  check out: https://github.com/echasnovski/mini.nvim
     end,
   },
   { -- highlight, edit, and navigate code
